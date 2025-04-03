@@ -5,7 +5,8 @@ const morgan = require("morgan");
 const helmet = require("helmet");
 
 const conectarDB = require("./config/db");
-const routes = require("./routes/index");
+const usuarioRoutes = require("./routes/usuarioRoutes");
+const chamadoRoutes = require("./routes/chamadoRoutes");
 
 const app = express();
 
@@ -16,7 +17,8 @@ app.use(cors());
 app.use(morgan("dev"));
 app.use(helmet());
 
-app.use("/api", routes);
+app.use("/api/usuarios", usuarioRoutes);
+app.use("/api/chamados", chamadoRoutes);
 
 app.get("/", (req, res) => {
     res.send("API de Chamados Rodando");

@@ -37,6 +37,8 @@ const loginUsuario = async (req, res) => {
     try {
         const usuario = await Usuario.findOne({ email });
 
+        console.log("Usuário logado:", usuario);
+
         if (usuario && (await usuario.compararSenha(senha))) {
             res.json({
                 _id: usuario._id,
