@@ -18,7 +18,16 @@ const criarChamado = async (req, res) => {
 
 const listarChamado = async (req, res) => {
     try {
-        const chamados = await Chamado.find()
+
+        const { status, cliente, atendente } = req.query;
+
+        const filtros = {};
+
+        if (status) filtros.status = status;
+        if (cliente) filtros.cliente = cliente;
+        if (atendente) filtros.atendente = atendente;
+
+        const chamados = await Chamado.find(filtros)
             .populate("cliente", "nome email")
             .populate("atendente", "nome email")
 

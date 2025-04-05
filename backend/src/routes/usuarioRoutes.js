@@ -9,11 +9,13 @@ const {
 } = require("../controllers/usuarioController")
 
 const { proteger, verificarAtendente } = require("../middlewares/authMiddleware");
+const { validarRegistro, validarLogin } = require("../middlewares/validacoesUsuario");
+const tratarErrosValidacao = require("../middlewares/tratarErros");
 
 const router = express.Router();
 
-router.post("/registro", registraUsuario);
-router.post("/login", loginUsuario);
+router.post("/registro", validarRegistro, tratarErrosValidacao, registraUsuario);
+router.post("/login", validarLogin, tratarErrosValidacao, loginUsuario);
 
 
 router.get("/", proteger, verificarAtendente, listarUsuarios);
