@@ -5,6 +5,7 @@ const {
     obterChamado,
     atualizarChamado,
     deletarChamado,
+    obterEstatisticas
 } = require("../controllers/chamadoController");
 
 const { proteger, verificarAtendente } = require("../middlewares/authMiddleware");
@@ -15,8 +16,10 @@ const router = express.Router();
 
 router.post("/", proteger, validarChamado, tratarErrosValidacao, criarChamado);
 router.get("/", proteger, verificarAtendente, listarChamado);
+router.get("/estatisticas", proteger, verificarAtendente, obterEstatisticas);
 router.get("/:id", proteger, obterChamado);
 router.put("/:id", proteger, verificarAtendente, validarAtualizacaoChamado, tratarErrosValidacao, atualizarChamado);
 router.delete("/:id", proteger, verificarAtendente, deletarChamado);
+
 
 module.exports = router;
