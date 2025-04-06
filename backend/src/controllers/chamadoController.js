@@ -19,17 +19,24 @@ const criarChamado = async (req, res) => {
 const listarChamado = async (req, res) => {
     try {
 
-        const { status, cliente, atendente } = req.query;
+        const { status, cliente, atendente, page = 1, limit = 10 } = req.query;
 
         const filtros = {};
-
         if (status) filtros.status = status;
         if (cliente) filtros.cliente = cliente;
         if (atendente) filtros.atendente = atendente;
 
-        const chamados = await Chamado.find(filtros)
-            .populate("cliente", "nome email")
-            .populate("atendente", "nome email")
+        const skip = (parseInt(page) - 1) * parseInt(limit);
+
+        const [chamados, total] = await Promise.all([
+            Chamado.find(filtros)
+                .skip(skip)
+                .limit(parseInt(limit))
+                .populate("cliente", "nome email")
+                .populate("atendente", "nome email"),
+            Chamado.countDocuments(filtros)
+        ]);
+            
 
         res.status(200).json(chamados);
     } catch (error) {
