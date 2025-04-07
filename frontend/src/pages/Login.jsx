@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "../api/axios";
+import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
-    const navigate = useNavigate();
+    const { login } = useAuth();
     const [email, setEmail] = useState("");
     const [senha, setSenha] = useState("");
     const [erro, setErro] = useState("");
@@ -13,14 +12,9 @@ export default function Login() {
         setErro('');
 
         try {
-            const res = await axios.post("/usuarios/login", {email, senha});
-            const { token } = res.data;
-
-            localStorage.setItem("token", token);
-            navigate("/chamados"); // Redireciona após Login
+            await login(email, senha); 
         } catch (err) {
-            console.error(err);
-            setErro(err.response?.data?.msg || "Erro ao fazer login");
+            setErro(err.response?.data?.msg || `Erro ao fazer login, ${err}`);
         }
     };
 
