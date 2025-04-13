@@ -23,12 +23,18 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, senha) => {
         const res = await api.post("/usuarios/login", { email, senha });
-        const { token, nome } = res.data;
+        const { token, role, nome } = res.data;
 
         localStorage.setItem("token", token);
         const decoded = jwtDecode(token);
-        setUsuario({ id: decoded.id, token, nome });
-        navigate("/chamados");
+        setUsuario({ id: decoded.id, token, nome, role });
+
+        if (role === "cliente") {
+            navigate("/novo")
+        } else {
+            navigate("/inicio");
+        }
+        
     };
 
     const logout = () => {

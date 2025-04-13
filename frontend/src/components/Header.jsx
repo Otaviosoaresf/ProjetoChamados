@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 export default function Header() {
@@ -10,6 +11,16 @@ export default function Header() {
             {usuario && (
                 <div className="flex items-center gap-4">
                     <span className="text-sm text-gray-700">Bem-vindo, <strong>{usuario.nome}</strong></span>
+
+                    {location.pathname !== "/novo" && (
+                        <Link
+                            to="/novo"
+                            className="bg-green-600 hover:bg-green-700 tex-white text-sm px-3 py-1 rounded"
+                        >
+                            + Novo Chamado
+                        </Link>
+                    )}
+
                     <button
                         onClick={logout}
                         className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm"
