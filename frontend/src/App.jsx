@@ -4,6 +4,8 @@ import Chamados from "./pages/Chamados";
 import PrivateRoute from "./context/PrivateRoute";
 import NovoChamado from "./pages/NovoChamado";
 import Inicio from "./pages/Inicio";
+import CadastrarUsuario from "./pages/CadastrarUsuario";
+import ListarUsuarios from "./pages/ListarUsuarios";
 
 export default function App() {
   return ( 
@@ -33,6 +35,24 @@ export default function App() {
         element={
           <PrivateRoute>
             <NovoChamado />
+          </PrivateRoute>
+        }
+      />
+
+      <Route 
+        path="/usuarios/novo"
+        element={
+          <PrivateRoute>
+            <CadastrarUsuario />
+          </PrivateRoute>
+        }
+      />
+
+      <Route 
+        path="/usuarios"
+        element={
+          <PrivateRoute>
+            <ListarUsuarios />
           </PrivateRoute>
         }
       />

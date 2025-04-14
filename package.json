@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "express-validator": "^7.2.1",
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "lucide-react": "^0.488.0"
   }
 }

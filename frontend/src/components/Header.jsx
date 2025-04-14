@@ -15,7 +15,7 @@ export default function Header() {
                     {location.pathname !== "/novo" && (
                         <Link
                             to="/novo"
-                            className="bg-green-600 hover:bg-green-700 tex-white text-sm px-3 py-1 rounded"
+                            className="bg-green-400 hover:bg-green-500 tex-white text-sm px-3 py-1 rounded"
                         >
                             + Novo Chamado
                         </Link>
