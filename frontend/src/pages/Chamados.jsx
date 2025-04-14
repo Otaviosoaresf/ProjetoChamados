@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../api/axios";
 import Header from "../components/Header";
+import { Link } from "react-router-dom";
 
 export default function Chamados() {
     const [ chamados, setChamados ] = useState([]);
@@ -72,6 +73,13 @@ export default function Chamados() {
                                         Assumir
                                     </button>
                                 )}
+
+                                <Link
+                                    to={`/chamados/${c._id}`}
+                                    className="text-blue-600 text-sm underline hover:text-blue-800"
+                                >
+                                    Ver detalhes
+                                </Link>
                             </div>
                         </li>
                     ))}

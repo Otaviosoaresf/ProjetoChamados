@@ -6,6 +6,7 @@ import NovoChamado from "./pages/NovoChamado";
 import Inicio from "./pages/Inicio";
 import CadastrarUsuario from "./pages/CadastrarUsuario";
 import ListarUsuarios from "./pages/ListarUsuarios";
+import DetalhesChamado from "./pages/DetalhesChamado";
 
 export default function App() {
   return ( 
@@ -56,6 +57,16 @@ export default function App() {
           </PrivateRoute>
         }
       />
+
+      <Route 
+        path="/chamados/:id"
+        element={
+          <PrivateRoute>
+            <DetalhesChamado />
+          </PrivateRoute>
+        }
+      />
+
     </Routes>
   );
 }
