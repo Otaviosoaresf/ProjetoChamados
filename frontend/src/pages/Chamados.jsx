@@ -6,11 +6,26 @@ import { Link } from "react-router-dom";
 export default function Chamados() {
     const [ chamados, setChamados ] = useState([]);
     const [ erro, setErro ] = useState("");
+    const [ filtroStatus, setFiltroStatus ] = useState("");
+    const [ buscaTitulo, setBuscaTitulo ] = useState("");
+    const [ buscaDebounce, setBuscaDebounce ] = useState("");
+    const [ paginaAtual, setPaginaAtual ] = useState(1);
+    const [ totalChamados, setTotalChamados ] = useState(0);
+
+    const chamadosPorPagina = 10;
 
     const carregarChamados = async () => {
         try {
-            const res = await api.get("/chamados");
+            const res = await api.get("/chamados", {
+                params: {
+                    page: paginaAtual,
+                    limit: chamadosPorPagina,
+                    ...(filtroStatus &&  { status: filtroStatus }),
+                    ...(buscaTitulo && { titulo: buscaTitulo }),
+            },
+        });
             setChamados(res.data.dados || res.data);
+            setTotalChamados(res.data.totla || 0);
         } catch (err) {
             setErro(`Erro ao carregar chamados: ${err}`)
         }
@@ -27,13 +42,63 @@ export default function Chamados() {
 
     useEffect(() => {
         carregarChamados();
-    }, []);
+        setErro("");
+    }, [filtroStatus, buscaDebounce, paginaAtual]);
+
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            setBuscaDebounce(buscaTitulo);
+            setPaginaAtual(1);
+        }, 500);
+
+        return () => clearTimeout(timeout);
+    }, [buscaTitulo]);
+
+    const statusClasses = (status) => 
+        `px-4 py-2 rounded-full text-sm font-semibold ${
+            filtroStatus === status
+            ? "bg-blue-600 text-white"
+            : "bg-gray-200 hover:bg-gray-300"
+        }`;
+
+    const totalPaginas = Math.ceil(totalChamados / chamadosPorPagina);
 
     return (
         <>
             <Header />
             <main className="p-6 max-w-4xl mx-auto">
                 <h2 className="text-2x1 font-bold mb-4">Chamados</h2>
+
+                {/* Campo de Busca */}
+
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
+                    <input 
+                        type="text"
+                        placeholder="Buscar por título..."
+                        value={buscaTitulo}
+                        onChange={(e) => setBuscaTitulo(e.target.value)}
+                        className="border rounded px-4 py-2 text-sm w-full sm:w-80 focus:outline-none focus:ring focus:border-blue-500"
+                    />
+                
+
+                    {/* Filtros */}
+                    <div className="flex flex-wrap gap-4 mb-6">
+                        <button onClick={() => setFiltroStatus("")} className={statusClasses("")}>
+                            Todos
+                        </button>
+                        <button onClick={() => setFiltroStatus("aberto")} className={statusClasses("aberto")}>
+                            Abertos
+                        </button>
+                        <button onClick={() => setFiltroStatus("em andamento")} className={statusClasses("em andamento")}>
+                            Em Andamento
+                        </button>
+                        <button onClick={() => setFiltroStatus("resolvido")} className={statusClasses("resolvido")}>
+                            Resolvidos
+                        </button>
+                    </div>
+                </div>
+
+                {/* Lista */}
                 {erro && <p className="text-red-500 mb-4">{erro}</p>}
 
                 <ul className="space-y-4">
@@ -84,6 +149,30 @@ export default function Chamados() {
                         </li>
                     ))}
                 </ul>
+
+                {/* Paginação */}
+
+                <div className="flex items-center justify-center gap-4 mt-8">
+                    <button
+                        onClick={() => setPaginaAtual((prev) => Math.max(prev - 1, 1))}
+                        disabled={paginaAtual === 1}
+                        className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+                    >
+                        Anterior
+                    </button>
+
+                    <span className="text-sm text-gray-700">
+                        Página {paginaAtual} de {totalPaginas || 1}
+                    </span>
+
+                    <button
+                        onClick={() => setPaginaAtual((prev) => Math.min(prev + 1, totalPaginas))}
+                        disabled={paginaAtual === totalPaginas}
+                        className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+                    >
+                        Próxima
+                    </button>
+                </div>
             </main>
         </>
     );

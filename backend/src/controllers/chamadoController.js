@@ -19,12 +19,13 @@ const criarChamado = async (req, res) => {
 const listarChamado = async (req, res) => {
     try {
 
-        const { status, cliente, atendente, page = 1, limit = 10 } = req.query;
+        const { status, cliente, atendente, titulo, page = 1, limit = 10 } = req.query;
 
         const filtros = {};
         if (status) filtros.status = status;
         if (cliente) filtros.cliente = cliente;
         if (atendente) filtros.atendente = atendente;
+        if (titulo) filtros.titulo = { $regex: titulo, $options: "i"}
 
         const skip = (parseInt(page) - 1) * parseInt(limit);
 
