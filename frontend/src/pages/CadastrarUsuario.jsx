@@ -44,69 +44,73 @@ export default function CadastrarUsuario() {
     return (
         <>
             <Header />
-            <main className="max-w md mx-auto p-6">
-                <h2 className="text-2x1 font-bold mb-6">Cadastrar Novo Usuário</h2>
+            <main className="flex items-center justify-center min-h-screen bg-gray-100 p-6">
+                <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-md">
+                    <h2 className="text-2x1 font-bold mb-6 text-center text-blue-600">
+                        Cadastrar Novo Usuário
+                    </h2>
 
-                {erro && <p className="text-red-500 text-sm font-medium text-gray-700">{erro}</p>}
-                {sucesso && <p className="text-green-600 text-sm mb-4">{sucesso}</p>}
+                    {erro && <p className="text-red-500 text-sm mb-4 text-center">{erro}</p>}
+                    {sucesso && <p className="text-green-600 text-sm mb-4 text-center">{sucesso}</p>}
 
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Nome</label>
-                        <input 
-                            type="text"
-                            name="nome"
-                            value={form.nome}
-                            onChange={handleChange}
-                            required
-                            className="mt-1 w-full border px-3 py-2 rounded"
-                        />
-                    </div>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">Nome</label>
+                            <input 
+                                type="text"
+                                name="nome"
+                                value={form.nome}
+                                onChange={handleChange}
+                                required
+                                className="mt-1 w-full border px-3 py-2 rounded px-3 py-2 text-sm focus:outline-none focus:ring focus:border-blue-500"
+                            />
+                        </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">E-mail</label>
-                        <input 
-                            type="email"
-                            name="email"
-                            value={form.email}
-                            onChange={handleChange}
-                            required
-                            className="mt-1 w-full border px-3 py-2 rounded"
-                        />
-                    </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">E-mail</label>
+                            <input 
+                                type="email"
+                                name="email"
+                                value={form.email}
+                                onChange={handleChange}
+                                required
+                                className="mt-1 w-full border px-3 py-2 rounded px-3 py-2 text-sm focus:outline-none focus:ring focus:border-blue-500"
+                            />
+                        </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Senha</label>
-                        <input 
-                            type="password"
-                            name="senha"
-                            value={form.senha}
-                            onChange={handleChange}
-                            required
-                            className="mt-1 w-full border px-3 py-2 rounded"
-                        />
-                    </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">Senha</label>
+                            <input 
+                                type="password"
+                                name="senha"
+                                value={form.senha}
+                                onChange={handleChange}
+                                required
+                                className="mt-1 w-full border px-3 py-2 rounded px-3 py-2 text-sm focus:outline-none focus:ring focus:border-blue-500"
+                            />
+                        </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Tipo de Usuário</label>
-                        <select
-                            name="role"
-                            value={form.role}
-                            onChange={handleChange}
-                            className="mt-1 w-full border px-3 py-2 rounded"
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">Tipo de Usuário</label>
+                            <select
+                                name="role"
+                                value={form.role}
+                                onChange={handleChange}
+                                className="mt-1 w-full border px-3 py-2 rounded px-3 py-2 text-sm focus:outline-none focus:ring focus:border-blue-500"
+                            >
+                                <option value="cliente">Cliente</option>
+                                <option value="atendente">Atendente</option>
+                            </select>
+                        </div>
+
+                        <button
+                            type="submit"
+                            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded transition"
                         >
-                            <option value="cliente">Cliente</option>
-                            <option value="atendente">Atendente</option>
-                        </select>
-                    </div>
-
-                    <button
-                        type="submit"
-                        className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-                    >
-                        Cadastrar
-                    </button>
-                </form>
+                            Cadastrar
+                        </button>
+                    </form>
+                </div>
             </main>
         </>
     );

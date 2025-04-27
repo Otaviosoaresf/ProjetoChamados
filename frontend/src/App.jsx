@@ -7,6 +7,7 @@ import Inicio from "./pages/Inicio";
 import CadastrarUsuario from "./pages/CadastrarUsuario";
 import ListarUsuarios from "./pages/ListarUsuarios";
 import DetalhesChamado from "./pages/DetalhesChamado";
+import MeusChamados from "./pages/MeusChamados";
 
 export default function App() {
   return ( 
@@ -63,6 +64,15 @@ export default function App() {
         element={
           <PrivateRoute>
             <DetalhesChamado />
+          </PrivateRoute>
+        }
+      />
+
+      <Route 
+        path="/meus-chamados"
+        element={
+          <PrivateRoute>
+            <MeusChamados />
           </PrivateRoute>
         }
       />

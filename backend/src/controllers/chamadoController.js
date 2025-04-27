@@ -95,6 +95,28 @@ const deletarChamado = async (req, res) => {
     }
 };
 
+const listarChamadosDoCliente = async (req, res) => {
+    try {
+        const { status } = req.query;
+
+        const filtros = { cliente: req.usuario.id };
+
+        if (status) {
+            filtros.status = status;
+        }
+
+        const chamados = await Chamado.find(filtros)
+            .populate("cliente", "nome email")
+            .populate("atendente", "nome email")
+            .sort({ createdAt: -1 });
+        
+        res.status(200).json(chamados);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ msg: "Erro ao listar chamados do cliente: ", error })
+    }
+};
+
 const obterEstatisticas = async (req, res) => {
     try {
         const total = await Chamado.countDocuments();
@@ -152,5 +174,6 @@ module.exports = {
     obterChamado,
     atualizarChamado,
     deletarChamado,
+    listarChamadosDoCliente,
     obterEstatisticas
 };
