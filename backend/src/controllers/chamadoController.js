@@ -120,53 +120,21 @@ const listarChamadosDoCliente = async (req, res) => {
 const obterEstatisticas = async (req, res) => {
     try {
         const total = await Chamado.countDocuments();
-
-        const porStatus = await Chamado.aggregate([
-            {
-                $group: {
-                    _id: "$status",
-                    quantidade: { $sum: 1 }
-                }
-            }
-        ]);
-
-        const porCliente = await Chamado.aggregate([
-            {
-                $group: {
-                    _id: "$cliente",
-                    quantidade: { $sum: 1 }
-                }
-            },
-            {
-                $lookup: {
-                    from: "usuarios",
-                    localField: "_id",
-                    foreignField: "_id",
-                    as: "cliente"
-                }
-            },
-            {
-                $unwind: "$cliente"
-            },
-            {
-                $project: {
-                    _id: 0,
-                    nome: "$cliente.nome",
-                    email: "$cliente.email",
-                    quantidade: 1
-                }
-            }
-        ]);
-
+        const abertos = await Chamado.countDocuments({ status: "aberto" });
+        const andamento = await Chamado.countDocuments({ status: "em andamento" });
+        const resolvidos = await Chamado.countDocuments({ status: "resolvido" });
+    
         res.status(200).json({
-            totalChamados: total,
-            porStatus,
-            porCliente
-         });
+            total,
+            abertos,
+            andamento,
+            resolvidos,
+        })
+        
     } catch (error) {
         res.status(500).json({ msg: "Erro ao obter estatísticas", error})
     }
-}
+};
 
 module.exports = {
     criarChamado,

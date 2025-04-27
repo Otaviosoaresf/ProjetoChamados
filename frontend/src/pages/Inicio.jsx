@@ -1,7 +1,7 @@
 import { useAuth } from "../context/AuthContext";
 import Header from "../components/Header";
 import { Link } from "react-router-dom";
-import { ClipboardList, UserPlus, Users } from "lucide-react";
+import { ClipboardList, PieChart, UserPlus, Users } from "lucide-react";
 
 export default function Inicio() {
     const { usuario } = useAuth();
@@ -40,6 +40,14 @@ export default function Inicio() {
                     >
                         <Users className="w-10 h-10 text-indigo-600 mb-3" />
                         <span className="text-lg font-medium text-indigo-700">Listar Usuários</span>
+                    </Link>
+
+                    <Link
+                        to="/estatisticas"
+                        className="flex flex-col items-center bg-white shadow-md p-6 rounded-xl hover:shadow-lg transition"
+                    >
+                        <PieChart className="w-10 h-10 text-purple-600 mb-3" />
+                        <span className="text-lg font-medium text-purple-700">Painel de Estatísticas</span>
                     </Link>
                 </div>
             </main>
