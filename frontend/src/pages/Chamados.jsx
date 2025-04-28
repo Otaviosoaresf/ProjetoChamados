@@ -130,7 +130,7 @@ export default function Chamados() {
                                     )}
                                 </div>
 
-                                {!c.atendente && (
+                                {c.status === "aberto" && !c.atendente && (
                                     <button
                                         onClick={() => assumirChamado(c._id)}
                                         className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-sm"

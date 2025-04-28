@@ -1,25 +1,52 @@
 import {  useEffect, useState } from "react";
 import api from "../api/axios";
 import Header from "../components/Header";
-import { UserCircle, ShieldCheck } from "lucide-react";
+import { UserCircle, ShieldCheck, Trash2 } from "lucide-react";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+
+const MySwal = withReactContent(Swal);
 
 export default function ListarUsuarios() {
     const [ usuarios, setUsuarios ] = useState([]);
     const [ erro, setErro ] = useState("");
+    
 
     useEffect(() => {
-        const carregarUsuarios = async () => {
-            try {
-                const res = await api.get("/usuarios");
-                setUsuarios(res.data);
-            } catch (err) {
-                console.error(err);
-                setErro("Erro ao carregar usuário: ", err)
-            }
-        }
-
         carregarUsuarios();
     }, []);
+
+    const carregarUsuarios = async () => {
+        try {
+            const res = await api.get("/usuarios");
+            setUsuarios(res.data);
+        } catch (err) {
+            console.error(err);
+            setErro("Erro ao carregar usuários: ", err)
+        }
+    }
+
+    const excluirUsuario = async (id) => {
+        const confirmacao = await MySwal.fire({
+            title: "Tem certeza?",
+            text: "Essa ação excluirá o usuário e os chamados dele que estiverem em aberto/em andamento!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sim, excluir!",
+            cancelButtonText: "Cancelar",
+        });
+
+        if (confirmacao.isConfirmed) {
+            try {
+                await api.delete(`/usuarios/${id}`);
+                MySwal.fire("Excluído!", "Usuario excluído com sucesso", "success");
+                carregarUsuarios();
+            } catch (err) {
+                console.error(err);
+                MySwal.fire("Erro", `Erro ao excluir o usuário: ${err}`, "error");
+            }
+        }
+    };
 
     const CardUsuario = ({ usuario }) => (
         <div className="flex flex-col items-center bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
@@ -37,6 +64,13 @@ export default function ListarUsuarios() {
             >
                 {usuario.role.charAt(0).toUpperCase() + usuario.role.slice(1)}
             </span>
+
+            <button
+                onClick={() => excluirUsuario(usuario._id)}
+                className="top-3 right-3 bg-red-500 hover:bg-red-600 text-white m-2 p-1 rounded-full"
+            >
+                <Trash2 className="w-4 h-4" />
+            </button>
         </div>
     );
 

@@ -83,18 +83,6 @@ const atualizarChamado = async (req, res) => {
     }
 };
 
-const deletarChamado = async (req, res) => {
-    try {
-        const chamado = await Chamado.findById(req.params.id);
-        if (!chamado) return res.status(404).json({ msg: "Chamado não encontrado" })
-
-        await chamado.deleteOne();
-        res.json({ msg: "Chamado removido com sucesso" });
-    } catch (error) {
-        res.status(500).json({ msg: "Erro ao deletar chamado", error });
-    }
-};
-
 const listarChamadosDoCliente = async (req, res) => {
     try {
         const { status } = req.query;
@@ -116,6 +104,33 @@ const listarChamadosDoCliente = async (req, res) => {
         res.status(500).json({ msg: "Erro ao listar chamados do cliente: ", error })
     }
 };
+
+const excluirChamadoCliente = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const chamado = await Chamado.findById(id);
+
+        if (!chamado) {
+            return res.status(404).json({ msg: "Chamado não encontrado" });
+        }
+
+        if (chamado.cliente.toString() !== req.usuario.id) {
+            return res.status(403).json({ msg: "Acesso negado. Apenas o criador do chamado pode excluí-lo."})
+        }
+
+        if (chamado.status !== "aberto") {
+            return res.status(400).json({ msg: "Só é possível excluir chamados em aberto."})
+        }
+
+        await chamado.deleteOne();
+
+        res.status(200).json({ msg: "Chamado excluído com sucesso."});
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ msg: "Erro ao excluir chamado.", error})
+    }
+}
 
 const obterEstatisticas = async (req, res) => {
     try {
@@ -141,7 +156,7 @@ module.exports = {
     listarChamado,
     obterChamado,
     atualizarChamado,
-    deletarChamado,
+    excluirChamadoCliente,
     listarChamadosDoCliente,
     obterEstatisticas
 };

@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import api from "../api/axios";
 import Header from "../components/Header";
+import { useChamadosCliente } from "../context/ChamadosClienteContext";
 
 export default function MeusChamados() {
-    const { usuario } = useAuth();
     const [chamados, setChamados] = useState([]);
     const [filtroStatus, setFiltroStatus] = useState("");
+    const { carregarChamadosAbertos } = useChamadosCliente();
 
     const carregarMeusChamados = async () => {
         try {
@@ -22,6 +23,22 @@ export default function MeusChamados() {
     useEffect(() => {
         carregarMeusChamados();
     }, [filtroStatus]);
+
+    const excluirChamado = async (id) => {
+        const confirmacao = window.confirm("Tem certeza que deseja excluir este chamado ?");
+
+        if (confirmacao) {
+            try {
+                await api.delete(`/chamados/meus/${id}`);
+                alert("Chamado excluído com sucesso.");
+                carregarMeusChamados();
+                carregarChamadosAbertos();
+            } catch (err) {
+                console.error(err);
+                alert("Erro ao excluir o chamado.");
+            }
+        }
+    };
 
     const statusClasses = (status) =>
         `px-4 py-2 rounded-full text-sm font-semibold ${
@@ -77,6 +94,15 @@ export default function MeusChamados() {
                                     <p className="text-sm text-gray-600">
                                         Atendente: {chamado.atendente?.nome}
                                     </p>
+                                )}
+
+                                {chamado.status === "aberto" && (
+                                    <button
+                                        onClick={() => excluirChamado(chamado._id)}
+                                        className="mt-2 bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded"
+                                    >
+                                        Excluir
+                                    </button>
                                 )}
                             </li>
                         ))

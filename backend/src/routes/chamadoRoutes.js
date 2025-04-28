@@ -4,7 +4,7 @@ const {
     listarChamado,
     obterChamado,
     atualizarChamado,
-    deletarChamado,
+    excluirChamadoCliente,
     obterEstatisticas,
     listarChamadosDoCliente
 } = require("../controllers/chamadoController");
@@ -19,9 +19,9 @@ router.post("/", proteger, validarChamado, tratarErrosValidacao, criarChamado);
 router.get("/", proteger, verificarAtendente, listarChamado);
 router.get("/estatisticas", proteger, verificarAtendente, obterEstatisticas);
 router.get("/meus", proteger, listarChamadosDoCliente)
+router.delete("/meus/:id", proteger, excluirChamadoCliente)
 router.get("/:id", proteger, obterChamado);
 router.put("/:id", proteger, verificarAtendente, validarAtualizacaoChamado, tratarErrosValidacao, atualizarChamado);
-router.delete("/:id", proteger, verificarAtendente, deletarChamado);
 
 
 module.exports = router;

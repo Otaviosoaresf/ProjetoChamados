@@ -2,6 +2,7 @@ require("dotenv").config();
 const Usuario = require("../models/Usuario");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const Chamado = require("../models/Chamado");
 
 const gerarToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {expiresIn: "7d"});
@@ -115,13 +116,38 @@ const atualizarPerfil = async (req, res) => {
 
 const deletarUsuario = async (req, res) => {
     try {
-        const usuario = await Usuario.findById(req.params.id);
-        if (!usuario) return res.status(404).json({ msg: "Usuário não encontrado" });
+        const { id } = req.params;
 
-        await usuario.deleteOne();
-        res.json({ msg: "Usuário removido com sucesso" });
+        const usuario = await Usuario.findById(id);
+
+        if (!usuario) {
+            return res.status(404).json({ msg: "Usuário não encontrado" });
+        }
+
+        if (usuario.role === "cliente") {
+            await Chamado.deleteMany({
+                cliente: id,
+                status: { $in: ["aberto", "em andamento"] },
+            });
+        }
+
+        if (usuario.role === "atendente") {
+            await Chamado.updateMany(
+                { atendente: id, status: "em andamento" },
+                {
+                    $set: {
+                        atendente: null,
+                        status: "aberto",
+                    },
+                }
+            );
+        }
+
+        await Usuario.findByIdAndDelete(id)
+
+        res.status(200).json({ msg: "Usuário excluído e chamados relacionados atualizados com sucesso." });
     } catch (error) {
-        res.status(500).json({ msg: "Erro ao deletar usuário" })
+        res.status(500).json({ msg: "Erro ao excluir usuário: ", error })
     }
 };
 
