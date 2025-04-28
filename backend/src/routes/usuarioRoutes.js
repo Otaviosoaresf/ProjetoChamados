@@ -6,6 +6,7 @@ const {
     buscarUsuario,
     atualizarUsuario,
     deletarUsuario,
+    atualizarPerfil,
 } = require("../controllers/usuarioController")
 
 const { proteger, verificarAtendente } = require("../middlewares/authMiddleware");
@@ -19,6 +20,7 @@ router.post("/login", validarLogin, tratarErrosValidacao, loginUsuario);
 
 
 router.get("/", proteger, verificarAtendente, listarUsuarios);
+router.put("/perfil", proteger, atualizarPerfil)
 router.get("/:id", proteger, buscarUsuario);
 router.put("/:id", proteger, atualizarUsuario);
 router.delete("/:id", proteger, verificarAtendente, deletarUsuario)

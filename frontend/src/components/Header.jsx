@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useChamadosCliente } from "../context/ChamadosClienteContext";
+import { Settings } from "lucide-react";
 
 export default function Header() {
     const { usuario, logout } = useAuth();
@@ -52,6 +53,18 @@ export default function Header() {
                             + Novo Chamado
                         </Link>
                     )}
+
+                    {/* Botão Editar Meu perfil */}
+                    {location.pathname !== "/perfil" && (
+                        <Link
+                            to="/perfil"
+                            className="flex items-center gap-1 bg-gray-600 hover:bg-gray-700 text-white text-sm px-3 py-1 rounded"
+                        >
+                            <Settings className="w-4 h-4" />
+                            Meu Perfil
+                        </Link>
+                    )}
+                        
 
                     <button
                         onClick={logout}

@@ -93,6 +93,26 @@ const atualizarUsuario = async (req, res) => {
     }
 }
 
+const atualizarPerfil = async (req, res) => {
+    try {
+        const { nome, email, senha} = req.body;
+
+        const atualizacoes = { nome, email };
+
+        if (senha) {
+            const salt = await bcrypt.genSalt(10);
+            atualizacoes.senha = await bcrypt.hash(senha, salt);
+        }
+
+        const usuarioAtualizado = await Usuario.findByIdAndUpdate(req.usuario.id, atualizacoes, { new: true });
+
+        res.status(200).json(usuarioAtualizado);
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ msg: "Erro ao atualizar perfil", error });
+    }
+};
+
 const deletarUsuario = async (req, res) => {
     try {
         const usuario = await Usuario.findById(req.params.id);
@@ -111,6 +131,7 @@ module.exports = {
     listarUsuarios,
     buscarUsuario,
     atualizarUsuario,
+    atualizarPerfil,
     deletarUsuario,
 }
 

@@ -9,6 +9,7 @@ import ListarUsuarios from "./pages/ListarUsuarios";
 import DetalhesChamado from "./pages/DetalhesChamado";
 import MeusChamados from "./pages/MeusChamados";
 import PainelEstatisticas from "./pages/PainelEstatisticas";
+import EditarPerfil from "./pages/EditarPerfil";
 
 export default function App() {
   return ( 
@@ -83,6 +84,15 @@ export default function App() {
         element={
           <PrivateRoute>
             <PainelEstatisticas />
+          </PrivateRoute>
+        }
+      />
+
+      <Route 
+        path="/perfil"
+        element={
+          <PrivateRoute>
+            <EditarPerfil />
           </PrivateRoute>
         }
       />
