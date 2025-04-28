@@ -2,15 +2,17 @@ import { useEffect, useState } from "react";
 import api from "../api/axios";
 import Header from "../components/Header";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export default function Chamados() {
-    const [ chamados, setChamados ] = useState([]);
-    const [ erro, setErro ] = useState("");
-    const [ filtroStatus, setFiltroStatus ] = useState("");
-    const [ buscaTitulo, setBuscaTitulo ] = useState("");
-    const [ buscaDebounce, setBuscaDebounce ] = useState("");
-    const [ paginaAtual, setPaginaAtual ] = useState(1);
-    const [ totalChamados, setTotalChamados ] = useState(0);
+    const { usuario } = useAuth();
+    const [chamados, setChamados] = useState([]);
+    const [erro, setErro] = useState("");
+    const [filtroStatus, setFiltroStatus] = useState("");
+    const [buscaTitulo, setBuscaTitulo] = useState("");
+    const [buscaDebounce, setBuscaDebounce] = useState("");
+    const [paginaAtual, setPaginaAtual] = useState(1);
+    const [totalChamados, setTotalChamados] = useState(0);
 
     const chamadosPorPagina = 10;
 
@@ -20,10 +22,10 @@ export default function Chamados() {
                 params: {
                     page: paginaAtual,
                     limit: chamadosPorPagina,
-                    ...(filtroStatus &&  { status: filtroStatus }),
+                    ...(filtroStatus && { status: filtroStatus }),
                     ...(buscaTitulo && { titulo: buscaTitulo }),
-            },
-        });
+                },
+            });
             setChamados(res.data.dados || res.data);
             setTotalChamados(res.data.totla || 0);
         } catch (err) {
@@ -35,6 +37,17 @@ export default function Chamados() {
         try {
             await api.put(`/chamados/${id}`, { status: "em andamento" });
             carregarChamados();
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const filtrarMeusChamados = async () => {
+        try {
+            const res = await api.get("/chamados", {
+                params: { atendente: usuario.id },
+            });
+            setChamados(res.data);
         } catch (err) {
             console.error(err);
         }
@@ -54,9 +67,8 @@ export default function Chamados() {
         return () => clearTimeout(timeout);
     }, [buscaTitulo]);
 
-    const statusClasses = (status) => 
-        `px-4 py-2 rounded-full text-sm font-semibold ${
-            filtroStatus === status
+    const statusClasses = (status) =>
+        `px-4 py-2 rounded-full text-sm font-semibold ${filtroStatus === status
             ? "bg-blue-600 text-white"
             : "bg-gray-200 hover:bg-gray-300"
         }`;
@@ -72,17 +84,17 @@ export default function Chamados() {
                 {/* Campo de Busca */}
 
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
-                    <input 
+                    <input
                         type="text"
                         placeholder="Buscar por título..."
                         value={buscaTitulo}
                         onChange={(e) => setBuscaTitulo(e.target.value)}
                         className="border rounded px-4 py-2 text-sm w-full sm:w-80 focus:outline-none focus:ring focus:border-blue-500"
                     />
-                
+
 
                     {/* Filtros */}
-                    <div className="flex flex-wrap gap-4 mb-6">
+                    <div className="text-gray-700 text-sm px-4 py-2 rounded">
                         <button onClick={() => setFiltroStatus("")} className={statusClasses("")}>
                             Todos
                         </button>
@@ -94,6 +106,15 @@ export default function Chamados() {
                         </button>
                         <button onClick={() => setFiltroStatus("resolvido")} className={statusClasses("resolvido")}>
                             Resolvidos
+                        </button>
+                    </div>
+
+                    <div className="border-l-2 border-gray-300 pl-4 ml-4">
+                        <button
+                            onClick={filtrarMeusChamados}
+                            className="bg-gray-200 hover:bg-gray-300 text-sm px-4 py-2 rounded shadow-md"
+                        >
+                            Meus Chamados
                         </button>
                     </div>
                 </div>
@@ -112,10 +133,10 @@ export default function Chamados() {
                                         <strong>Status:</strong>{" "}
                                         <span className={
                                             c.status === "aberto"
-                                            ? "text-orange-500"
-                                            : c.status === "em andamento"
-                                            ? "text-blue-500"
-                                            : "text-green-600"
+                                                ? "text-orange-500"
+                                                : c.status === "em andamento"
+                                                    ? "text-blue-500"
+                                                    : "text-green-600"
                                         }>
                                             {c.status}
                                         </span>
@@ -133,7 +154,7 @@ export default function Chamados() {
                                 {c.status === "aberto" && !c.atendente && (
                                     <button
                                         onClick={() => assumirChamado(c._id)}
-                                        className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-sm"
+                                        className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-sm"
                                     >
                                         Assumir
                                     </button>
@@ -141,7 +162,7 @@ export default function Chamados() {
 
                                 <Link
                                     to={`/chamados/${c._id}`}
-                                    className="text-blue-600 text-sm underline hover:text-blue-800"
+                                    className="inline-block mt-3 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 py-2 rounded shadow transition"
                                 >
                                     Ver detalhes
                                 </Link>
