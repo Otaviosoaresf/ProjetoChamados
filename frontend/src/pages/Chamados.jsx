@@ -35,7 +35,7 @@ export default function Chamados() {
 
     const assumirChamado = async (id) => {
         try {
-            await api.put(`/chamados/${id}`, { status: "em andamento" });
+            await api.put(`/chamados/${id}/assumir`);
             carregarChamados();
         } catch (err) {
             console.error(err);

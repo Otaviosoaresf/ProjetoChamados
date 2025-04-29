@@ -59,27 +59,54 @@ const obterChamado = async (req, res) => {
     }
 };
 
-const atualizarChamado = async (req, res) => {
+const assumirChamado = async (req, res) => {
     try {
         const chamado = await Chamado.findById(req.params.id);
 
-        if (!chamado) return res.status(404).json({ msg: "Chamado não encontrado" });
-
-        if (chamado.atendente && chamado.atendente.toString() !== req.usuario._id.toString()) {
-            return res.status(403).json({ msg: "Este chamado já foi atribuído a outro atendente." });
+        if (!chamado) {
+            return res.status(404).json({ msg: "Chamado não encontrado" })
         }
 
-        chamado.status = req.body.status || chamado.status;
-        
-         if (!chamado.atendente) {
-            chamado.atendente = req.usuario._id;
-         }
+        if (chamado.status !== "aberto") {
+            return res.status(400).json({ msg: "Chamado não está disponível para ser assumido."})
+        }
 
+        chamado.atendente = req.usuario.id;
+        chamado.status = "em andamento";
+        chamado.dataAssumido = new Date()
         await chamado.save();
 
-        res.status(200).json({ msg: "Chamado atualizado com sucesso", chamado });
+        res.status(200).json({ msg: "Chamado assumido com sucesso." });
     } catch (error) {
-        res.status(500).json({ msg: "Erro ao atualizar chamado", error })
+        console.error(error);
+        res.status(500).json({ msg: "Erro ao assumir chamado.", error})
+    }
+};
+
+const resolverChamado = async (req, res) => {
+    try {
+        const chamado = await Chamado.findById(req.params.id);
+
+        if (!chamado) {
+            return res.status(404).json({ msg: "Chamado não encontrado" });
+        }
+
+        if (chamado.status !== "em andamento") {
+            return res.status(400).json({ msg: "Chamado não está em andamento." })
+        }
+
+        if (chamado.atendente.toString() !== req.usuario.id) {
+            return res.status(403).json({ msg: "Você não pode resolver este chamado." })
+        }
+
+        chamado.status = "resolvido";
+        chamado.dataResolvido = new Date();
+        await chamado.save();
+
+        res.status(200).json({ msg: "Chamado resolvido com sucesso." });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ msg: "Erro ao resolver chamado.", error})
     }
 };
 
@@ -155,7 +182,8 @@ module.exports = {
     criarChamado,
     listarChamado,
     obterChamado,
-    atualizarChamado,
+    assumirChamado,
+    resolverChamado,
     excluirChamadoCliente,
     listarChamadosDoCliente,
     obterEstatisticas

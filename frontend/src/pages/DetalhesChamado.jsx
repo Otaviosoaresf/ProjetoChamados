@@ -1,4 +1,4 @@
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import api from "../api/axios";
@@ -35,13 +35,19 @@ export default function DetalhesChamado() {
 
     const resolverChamado = async () => {
         try {
-            await api.put(`/chamados/${id}`, { status: "resolvido" });
+            await api.put(`/chamados/${id}/resolver`);
             setSucesso("Chamado resolvido com sucesso, retornando ao menu de chamados...");
             setTimeout(() => navigate("/chamados"), 1500);
         } catch (err) {
             setErro('Erro ao atualizar o chamado.', err);
         }
     };
+
+    const formatarDataCompleta = (data) => {
+        if (!data) return null;
+        const d = new Date(data);
+        return `${d.toLocaleDateString('pt-BR')} ás ${d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit'})}h`;
+    }
 
     if (!chamado) {
         return (
@@ -67,6 +73,18 @@ export default function DetalhesChamado() {
                         <Clock3 className="w-5 h-5 text-gray-500" />
                         Criado em: {new Date(chamado.createdAt).toLocaleString("pt-BR")}
                     </p>
+
+                    <p className="flex items-center gap-2">
+                        <Clock3 className="w-5 h-5 text-gray-500" />
+                        Assumido em: {chamado.dataAssumido ? formatarDataCompleta(chamado.dataAssumido) : "Não assumido ainda" }
+                    </p>
+
+                    {chamado.dataResolvido && (
+                        <p className="flex items-center gap-2">
+                            <Clock3 className="w-5 h-5 text-gray-500" />
+                            Resolvido em: {formatarDataCompleta(chamado.dataResolvido)}
+                        </p>
+                    )}
 
                     <p className="flex items-start gap-2">
                         <BadgeCheck className="w-5 h-5 text-blue-500 mt-1" />

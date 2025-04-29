@@ -24,6 +24,14 @@ const ChamadoSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Usuario",
         default: null,
+    },
+    dataAssumido: {
+        type: Date,
+        default: null,
+    },
+    dataResolvido: {
+        type: Date,
+        default: null,
     }
 }, { timestamps: true });
 

@@ -10,11 +10,5 @@ const validarChamado = [
         .isLength({ min: 10 }).withMessage("A descrição deve ter pelo menos 10 caracteres"),
 ];
 
-const validarAtualizacaoChamado = [
-    body("status")
-        .optional()
-        .isIn(["aberto", "em andamento", "resolvido"])
-        .withMessage("Status inválido. Use: aberto, em andamento ou resolvido"),
-];
 
-module.exports = { validarChamado, validarAtualizacaoChamado };
+module.exports = { validarChamado };
