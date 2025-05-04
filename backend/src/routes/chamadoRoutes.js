@@ -7,7 +7,10 @@ const {
     resolverChamado,
     excluirChamadoCliente,
     obterEstatisticas,
-    listarChamadosDoCliente
+    listarChamadosDoCliente,
+    estatisticasPorTempo,
+    listarChamadosPorCliente,
+    listarChamadosPorAtendente
 } = require("../controllers/chamadoController");
 
 const { proteger, verificarAtendente } = require("../middlewares/authMiddleware");
@@ -18,9 +21,12 @@ const router = express.Router();
 
 router.post("/", proteger, validarChamado, tratarErrosValidacao, criarChamado);
 router.get("/", proteger, verificarAtendente, listarChamado);
+router.get("/por-tempo", proteger, verificarAtendente, estatisticasPorTempo);
 router.get("/estatisticas", proteger, verificarAtendente, obterEstatisticas);
 router.get("/meus", proteger, listarChamadosDoCliente)
 router.delete("/meus/:id", proteger, excluirChamadoCliente)
+router.get("/cliente/:id", proteger, verificarAtendente, listarChamadosPorCliente);
+router.get("/atendente/:id", proteger, verificarAtendente, listarChamadosPorAtendente);
 router.get("/:id", proteger, obterChamado);
 router.put("/:id/assumir", proteger, verificarAtendente, assumirChamado);
 router.put("/:id/resolver", proteger, verificarAtendente, resolverChamado);

@@ -27,7 +27,7 @@ export default function Chamados() {
                 },
             });
             setChamados(res.data.dados || res.data);
-            setTotalChamados(res.data.totla || 0);
+            setTotalChamados(res.data.total || 0);
         } catch (err) {
             setErro(`Erro ao carregar chamados: ${err}`)
         }
@@ -45,9 +45,15 @@ export default function Chamados() {
     const filtrarMeusChamados = async () => {
         try {
             const res = await api.get("/chamados", {
-                params: { atendente: usuario.id },
+                params: { 
+                    atendente: usuario.id,
+                    page: 1,
+                    limit: chamadosPorPagina,
+                },
             });
-            setChamados(res.data);
+            setChamados(res.data.dados || []);
+            setTotalChamados(res.data.total || 0);
+            setPaginaAtual(1);
         } catch (err) {
             console.error(err);
         }
@@ -128,7 +134,9 @@ export default function Chamados() {
                             <div className="flex justify-between items-center">
                                 <div>
                                     <p className="font-semibold text-lg">{c.titulo}</p>
-                                    <p className="text-sm text-gray-500">{c.descricao}</p>
+                                    <p className="text-sm text-gray-500 max-w-md overflow-hidden text-ellipsis whitespace-normal leading-snug" style={{ maxHeight: "3.5rem" }}>
+                                        {c.descricao}
+                                    </p>
                                     <p className="text-sm mt-2">
                                         <strong>Status:</strong>{" "}
                                         <span className={
@@ -151,21 +159,23 @@ export default function Chamados() {
                                     )}
                                 </div>
 
-                                {c.status === "aberto" && !c.atendente && (
-                                    <button
-                                        onClick={() => assumirChamado(c._id)}
-                                        className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-sm"
-                                    >
-                                        Assumir
-                                    </button>
-                                )}
+                                <div className="flex flex-col items-end gap-2 ml-4">
+                                    {c.status === "aberto" && !c.atendente && (
+                                        <button
+                                            onClick={() => assumirChamado(c._id)}
+                                            className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-sm"
+                                        >
+                                            Assumir
+                                        </button>
+                                    )}
 
-                                <Link
-                                    to={`/chamados/${c._id}`}
-                                    className="inline-block mt-3 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 py-2 rounded shadow transition"
-                                >
-                                    Ver detalhes
-                                </Link>
+                                    <Link
+                                        to={`/chamados/${c._id}`}
+                                        className="inline-block mt-3 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 py-2 rounded shadow transition"
+                                    >
+                                        Ver detalhes
+                                    </Link>
+                                </div>
                             </div>
                         </li>
                     ))}

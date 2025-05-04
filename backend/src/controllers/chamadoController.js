@@ -39,7 +39,10 @@ const listarChamado = async (req, res) => {
         ]);
             
 
-        res.status(200).json(chamados);
+        res.status(200).json({
+            dados: chamados, 
+            total
+        });
     } catch (error) {
         res.status(500).json({ msg: "Erro ao listar chamados", error });
     }
@@ -132,6 +135,65 @@ const listarChamadosDoCliente = async (req, res) => {
     }
 };
 
+const listarChamadosPorCliente = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const chamados = await Chamado.find({ cliente: id })
+            .populate("cliente", "nome email")
+            .populate("atendente", "nome email");
+
+        res.status(200).json(chamados);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ msg: "Erro ao buscar chamados do cliente."})
+    }
+};
+
+const listarChamadosPorAtendente = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const chamados = await Chamado.find({ atendente: id })
+            .populate("cliente", "nome email")
+            .populate("atendente", "nome email");
+        
+        res.status(200).json(chamados);
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ msg: "Erro ao buscar chamados do atendente." })
+    }
+};
+
+const estatisticasPorTempo = async (req, res) => {
+    try {
+        const { ano, mes } = req.query;
+
+        if (!ano) {
+            return res.status(400).json({ msg: "Ano é obrigatório para a busca." })
+        }
+
+        const filtroData = {
+            createdAt: {
+                $gte: new Date(`${ano}-${mes || "01"}-01T00:00:00.000Z`),
+                $lte: mes
+                    ? new Date(`${ano}-${String(Number(mes) + 1).padStart(2, '0')}-01T00:00:00.000Z`)
+                    : new Date(`${Number(ano) + 1}-01-01T00:00:00.000Z`),
+            },
+        };
+
+        const total = await Chamado.countDocuments(filtroData);
+        const abertos = await Chamado.countDocuments({ ...filtroData, status: "aberto" });
+        const andamento = await Chamado.countDocuments({ ...filtroData, status: "em andamento" });
+        const resolvidos = await Chamado.countDocuments({ ...filtroData, status: "resolvidos" });
+
+        res.status(200).json({ total, abertos, andamento, resolvidos });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ msg: "Erro ao buscar estatísticas de tempo." });
+    }
+};
+
 const excluirChamadoCliente = async (req, res) => {
     try {
         const { id } = req.params;
@@ -184,6 +246,9 @@ module.exports = {
     obterChamado,
     assumirChamado,
     resolverChamado,
+    listarChamadosPorCliente,
+    listarChamadosPorAtendente,
+    estatisticasPorTempo,
     excluirChamadoCliente,
     listarChamadosDoCliente,
     obterEstatisticas

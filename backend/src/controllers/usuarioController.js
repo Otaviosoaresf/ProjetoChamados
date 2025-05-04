@@ -58,10 +58,15 @@ const loginUsuario = async (req, res) => {
 
 const listarUsuarios = async (req, res) => {
     try {
-        const usuarios = await Usuario.find().select("-senha");
-        res.json(usuarios);
+        const { role } = req.query;
+        const filtro = role ? { role } : {};
+
+        const usuarios = await Usuario.find(filtro).select("-senha");
+
+        res.status(200).json(usuarios);
     } catch (error) {
-        res.status(500).json({ msg: "Erro ao buscar usuários", error})
+        console.error(error);
+        res.status(500).json({ msg: "Erro ao buscar usuários", error});
     }
 };
 
