@@ -16,6 +16,8 @@ const criarChamado = async (req, res) => {
     }
 };
 
+// Teste.
+
 const listarChamado = async (req, res) => {
     try {
 
